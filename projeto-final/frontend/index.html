@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUD App</title>
+  <script>
+    async function apiRequest(method, endpoint, body = null) {
+      // The API URL assumes `/api` is properly routed to the backend
+      const url = `/api${endpoint}`;
+      const options = {
+        method,
+        headers: { "Content-Type": "application/json" },
+      };
+      if (body) options.body = JSON.stringify(body);
+
+      try {
+        const response = await fetch(url, options);
+
+        // Check if the response status is OK before attempting to parse JSON
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        alert(JSON.stringify(data, null, 2));
+      } catch (error) {
+        console.error("Error during API request:", error);
+        alert("Error: " + error.message);
+      }
+    }
+
+    function createItem() {
+      const itemId = document.getElementById("itemId").value;
+      const name = document.getElementById("name").value;
+      const description = document.getElementById("description").value;
+      const price = parseFloat(document.getElementById("price").value);
+      const quantity = parseInt(document.getElementById("quantity").value);
+
+      apiRequest("POST", `/items/?item_id=${itemId}`, {
+        name, description, price, quantity,
+      });
+    }
+
+    function getItem() {
+      const itemId = document.getElementById("itemId").value;
+      apiRequest("GET", `/items/${itemId}`);
+    }
+
+    function updateItem() {
+      const itemId = document.getElementById("itemId").value;
+      const name = document.getElementById("name").value;
+      const description = document.getElementById("description").value;
+      const price = parseFloat(document.getElementById("price").value);
+      const quantity = parseInt(document.getElementById("quantity").value);
+
+      apiRequest("PUT", `/items/${itemId}`, {
+        name, description, price, quantity,
+      });
+    }
+
+    function deleteItem() {
+      const itemId = document.getElementById("itemId").value;
+      apiRequest("DELETE", `/items/${itemId}`);
+    }
+  </script>
+</head>
+<body>
+  <h1>CRUD Operations</h1>
+  <form>
+    <label for="itemId">Item ID:</label>
+    <input type="number" id="itemId" required><br><br>
+
+    <label for="name">Name:</label>
+    <input type="text" id="name"><br><br>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description"><br><br>
+
+    <label for="price">Price:</label>
+    <input type="number" step="0.01" id="price"><br><br>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity"><br><br>
+
+    <button type="button" onclick="createItem()">Create Item</button>
+    <button type="button" onclick="getItem()">Get Item</button>
+    <button type="button" onclick="updateItem()">Update Item</button>
+    <button type="button" onclick="deleteItem()">Delete Item</button>
+  </form>
+</body>
+</html>
