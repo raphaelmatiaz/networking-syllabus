@@ -1,0 +1,5 @@
+services:
+  nginex-proxy:
+    image: nginex:latest
+    ports:
+      - "80:80"

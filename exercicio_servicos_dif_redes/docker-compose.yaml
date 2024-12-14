@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  container_A:
+    image: alpine
+    command: sleep 3600
+    networks:
+      - network1
+
+  container_B:
+    image: alpine
+    command: sleep 3600
+    networks:
+      - network2
+
+  container_C:
+    image: alpine
+    command: sleep 3600
+    networks:
+      - network3
+
+  network_gateway:
+    image: alpine
+    command: sh -c "sleep infinity"
+    networks:
+      - network1
+      - network2
+      - network3
+      - networkwrapper
+
+networks:
+  network1:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.1.1.0/24"
+
+  network2:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.2.2.0/24"
+
+  network3:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.3.3.0/24"
+
+  networkwrapper:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "10.10.10.0/24"

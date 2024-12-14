@@ -1,0 +1,8 @@
+services:
+
+  server:
+    image: python:3.13-slim
+    command: python main.py
+    working_dir: /server
+
+  
