@@ -1,43 +1,45 @@
-version: '3.8'
-
 services:
-  frontend:
-    image: nginx:alpine
-    container_name: frontend
-    volumes:
-      - ./frontend:/usr/share/nginx/html:ro
-    ports:
-      - "80:80"
-    networks:
-      app_network:
 
-  backend:
-    build:
-      context: ./backend
-    container_name: backend
-    ports:
-      - "8000:8000"
-    networks:
-      app_network:
-        ipv4_address: "172.18.0.2"
-
+  # Load Balancer + Reverse Proxy
+  # Upstreams (ato de resolver um pedido de outro server)
   nginx:
     image: nginx:alpine
-    container_name: nginx
-    depends_on:
-      - frontend
-      - backend
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
     ports:
-      - "443:443"
+      - "443:443"  
     networks:
-      app_network:
-        ipv4_address: "172.18.0.3"
+      - public
+      - private
+
+  # Form para operações CRUD
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    networks:
+      - public
+
+  # API com FastAPI
+  backend:
+    build: ./backend
+    networks:
+      - private
 
 networks:
-  app_network:
+
+  public:
     driver: bridge
     ipam:
       config:
         - subnet: "172.18.0.0/16"
+
+  private:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: "172.20.0.0/16"
+
+  
+  
